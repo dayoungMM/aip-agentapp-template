@@ -24,6 +24,6 @@ if [ -f .env ]; then
 fi
 
 cd ..
-python template/react_agent/main.py
+python template/simple_graph/main.py
 
 

@@ -1,7 +1,0 @@
-{
-    "include_path": ["."],
-    "graph_name": "agent",
-    "graph_path": "./react_agent/graph.py:graph",
-    "env_file": ".env",
-    "model_name_list": ["GIP/gpt-4o-2024-05-13"]
-}
