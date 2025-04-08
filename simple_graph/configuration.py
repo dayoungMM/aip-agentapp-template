@@ -31,15 +31,3 @@ class Configuration(BaseModel):
     )
     aip_headers: AIPHeaderKeysExtraIgnore | None = Field(default=None)
     
-    # @model_validator(mode="before")
-    # def from_runnable_config(
-    #     cls, config: Optional[RunnableConfig] = None
-    # ) -> Configuration:
-    #     """Create a Configuration instance from a RunnableConfig object."""
-    #     config = ensure_config(config)
-    #     configurable = config.get("configurable") or {}
-    #     # system_prompt = config.get("system_prompt")
-    #     # max_search_results = config.get("max_search_results")
-    #     # aip_headers = configurable.get("aip_headers")
-    #     # return cls(**{k: v for k, v in config.items() if k in cls.__annotations__.keys()})
-    #     return cls(**configurable)

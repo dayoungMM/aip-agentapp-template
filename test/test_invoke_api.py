@@ -16,14 +16,7 @@ def test_invoke_api():
     system_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     payload = {
-        "input": {"messages": [{"content": "how are you?", "type": "human"}]},
-        "config": {
-            "configurable": {
-                "max_search_results": 10,
-                "system_prompt": f"You are a helpful AI assistant.\n\nSystem time: {system_time}",
-            }
-        },
-        "kwargs": {},
+        "input": {"messages": [{"content": "how are you?", "type": "human"}]}
     }
 
     response = requests.post(url, headers=headers, json=payload)

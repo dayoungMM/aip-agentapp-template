@@ -35,10 +35,8 @@ async def call_model(
     
     configuration = Configuration.model_validate(config.get("configurable", {}))
 
-    # Initialize the model with tool binding. Change the model or add more tools here.
-    # model = load_chat_model(configuration.model).bind_tools(TOOLS)
-    
-    
+    # If you want to use the AIP headers, get them from the Runnable Config
+    # AIP headers are used to logging in A.X Platform Gateway. If you don't want to use them, you can remove this part.
     if isinstance(configuration.aip_headers, dict):
         aip_headers: AIPHeaderKeysExtraIgnore = AIPHeaderKeysExtraIgnore.model_validate(configuration.aip_headers)
     elif isinstance(configuration.aip_headers, AIPHeaderKeysExtraIgnore):
