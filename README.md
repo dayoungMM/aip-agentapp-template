@@ -38,7 +38,7 @@ sktaip-cli dev --host localhost --port 28080 --graph_yaml ./graph.yaml
 ### 1. Build Automatically
 > rename IMAGE_TAG for docker image tag. ex)react-agent-v0.1.0
 ```
-sktaip-cli build -t IMAGE_TAG --./langgraph.json
+sktaip-cli build -t IMAGE_TAG --graph_yaml ./graph.yaml
 ```
 
 ### 2. Build Via Dockerfile
