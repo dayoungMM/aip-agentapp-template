@@ -23,12 +23,6 @@ pip install sktaip-cli
 pip install -r requirements.txt
 ```
 
-## Create template (Unsupported)
-> You can git clone this repository instead of aip-cli new
-```
-sktaip-cli new [PATH] --template default
-```
-
 ## Launch langgraph server locally
 ```
 sktaip-cli dev --host localhost --port 28080 --graph_yaml ./graph.yaml
@@ -51,25 +45,3 @@ sktaip-cli dockerfile --output ./sktaip.Dockerfile --graph_yaml ./graph.yaml
 docker build -t IMAGE_TAG -f ./sktaip.Dockerfile .
 ```
 
-## Push docker image (Not Available)
-```
-sktaip-cli push -t IMAGE_TAG 
-```
-## Deploy New App to Platform (Not Available)
-```
-sktaip-cli login --endpoint https://aip.sktai.io
-sktaip-cli deploy -t IMAGE_TAG_V1 -model MODEL_1 -model MODEL_2 -n MY_APP_NAME -desc MY_APP_DESC
-sktaip-cli get-app --id MY_APP_ID
-sktaip-cli create-apikey --app_id MY_APP_ID
-sktaip-cli get-apikey --app_id MY_APP_ID
-sktaip-cli invoke-example
-```
-## Deploy New Version to Exsiting APP (Not Available)
-```
-sktaip-cli deploy -id MY_APP_ID -t IMAGE_TAG_V2 -model MODEL_1 -model MODEL_2 -n MY_VERSION_NAME -desc MY_VERSION_DESC
-```
-
-## Generate langgraph dockerfile (Not Available)
-```
-sktaip-cli dockerfile
-```
