@@ -45,3 +45,62 @@ sktaip-cli dockerfile --output ./sktaip.Dockerfile --graph_yaml ./graph.yaml
 docker build -t IMAGE_TAG -f ./sktaip.Dockerfile .
 ```
 
+## How to Request to Server
+1. API 
+
+> Please add the user's question to the `messages` field in the `input`.
+
+![Swagger UI](./static/swagger.png)
+
+```bash
+curl -X 'POST' \
+  'http://localhost:28080/invoke' \
+  -H 'aip-user: <any user name>' \
+  -H 'secret-mode: false' \
+  -H 'Authorization: <your api key>' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "input": {
+    "messages": [
+            {
+                "content": "kiiikiii가 누구야??",
+                "type": "human"
+            }]
+  }
+}'
+```
+
+2. Python
+
+```python
+from langserve import RemoteRunnable
+
+headers = {
+    "aip-user": "<any user name",
+    "Authorization": "<your api key></your>",
+}
+
+agent = RemoteRunnable(
+    "http://localhost:28080",
+    headers=headers,
+)
+response = agent.invoke(
+    {"messages": [{"content": "Hi", "type": "human"}]}
+)
+print(response)
+assert response
+
+```
+
+3. Playground
+3.1 Login Page
+> http://localhost:28080/login \
+`api_key` and `user_name` is required
+
+![Login UI](./static/playground_login.png)
+
+3.2 Playground
+
+> Run Graph via Playground. Add user Question at Input Message Form
+
+![Run UI](./static/playground_run.png)

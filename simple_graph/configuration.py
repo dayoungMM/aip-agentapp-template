@@ -12,9 +12,7 @@ from simple_graph import prompts
 from sktaip_api.utils import AIPHeaderKeysExtraIgnore
 
     
-class Configuration(BaseModel):
-    """The configuration for the agent."""
-
+class BaseConfiguration(BaseModel):
     system_prompt: str = Field(
         default=prompts.SYSTEM_PROMPT,
         metadata={
@@ -22,12 +20,7 @@ class Configuration(BaseModel):
             "This prompt sets the context and behavior for the agent."
         },
     )
-
-    max_search_results: int = Field(
-        default=10,
-        metadata={
-            "description": "The maximum number of search results to return for each search query."
-        },
-    )
-    aip_headers: AIPHeaderKeysExtraIgnore | None = Field(default=None)
+class Configuration(BaseConfiguration):
+    """The configuration for the agent."""
+    aip_headers: dict| AIPHeaderKeysExtraIgnore = Field(default={})
     

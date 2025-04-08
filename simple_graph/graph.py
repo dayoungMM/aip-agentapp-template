@@ -13,7 +13,7 @@ from langchain_core.runnables import RunnableConfig
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode
 from langchain_openai.chat_models import ChatOpenAI
-from simple_graph.configuration import Configuration
+from simple_graph.configuration import Configuration, BaseConfiguration
 from simple_graph.state import InputState, State
 from simple_graph.tools import TOOLS
 from sktaip_api.utils import AIPHeaderKeysExtraIgnore
@@ -73,7 +73,7 @@ async def call_model(
 
 
 # Define a new graph
-builder = StateGraph(State, input=InputState, config_schema=Configuration)
+builder = StateGraph(State, input=InputState, config_schema=BaseConfiguration)
 
 builder.add_node(call_model)
 
