@@ -16,19 +16,39 @@
             "problemMatcher": [],
 
         },
-        
         {
             "label": "[cli]: 2. adxp-cli agent run",
             "type": "shell",
             "command": "bash",
             "args": [
                 "-c",
-                "dir=$(dirname \"${command:python.interpreterPath}\"); \"$dir/adxp-cli\" agent run --host 127.0.0.1 --port 28080 --graph_yaml ./graph.yaml"
+                "dir=$(dirname \"${command:python.interpreterPath}\"); \"$dir/adxp-cli\" agent run --host 127.0.0.1 --port 18080 --graph_yaml ./graph.yaml"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
             "problemMatcher": []
-        }
+        },
+        {
+            "label": "[cli]: 3. adxp-cli agent build",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "dir=$(dirname \"${command:python.interpreterPath}\"); \"$dir/adxp-cli\" agent build -t ${input:imageName} --graph_yaml ./graph.yaml"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },    
+    ],
+    "inputs": [
+        {
+            "id": "imageName",
+            "type": "promptString",
+            "description": "Container image name",
+            "default": "cli-example-agent"
+        },
     ]
 }

@@ -44,7 +44,10 @@ adxp-cli agent dockerfile --output ./sktaip.Dockerfile --graph_yaml ./graph.yaml
 ```
 docker build -t IMAGE_NAME -f ./sktaip.Dockerfile .
 ```
-
+## 3. Run docker image on local
+```
+docker run -d -p 18080:18080 IMAGE_NAME
+```
 ## How to Request to Server
 1. API 
 
