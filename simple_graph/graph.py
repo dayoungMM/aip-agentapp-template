@@ -16,7 +16,7 @@ from langchain_openai.chat_models import ChatOpenAI
 from simple_graph.configuration import Configuration, BaseConfiguration
 from simple_graph.state import InputState, State
 from simple_graph.tools import TOOLS
-from sktaip_api.utils import AIPHeaderKeysExtraIgnore
+from adxp_sdk.serves.utils import AIPHeaderKeysExtraIgnore
 
 async def call_model(
     state: State, config: RunnableConfig

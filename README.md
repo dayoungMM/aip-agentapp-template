@@ -16,7 +16,7 @@ Please fill in appropriate values
 ## Installation
 1. requirements.txt 가 없는 경우
 ```
-pip install sktaip-cli
+pip install adxp-cli
 ```
 2. requirements.txt 사용하는 경우
 ```
@@ -25,24 +25,24 @@ pip install -r requirements.txt
 
 ## Launch langgraph server locally
 ```
-sktaip-cli dev --host localhost --port 28080 --graph_yaml ./graph.yaml
+adxp-cli agent run --host localhost --port 28080 --graph_yaml ./graph.yaml
 ```
 ## Build 
 
 ### 1. Build Automatically
-> rename IMAGE_TAG for docker image tag. ex)react-agent-v0.1.0
+> rename IMAGE_NAME for docker image
 ```
-sktaip-cli build -t IMAGE_TAG --graph_yaml ./graph.yaml
+adxp-cli agent build -t IMAGE_NAME  --graph_yaml ./graph.yaml
 ```
 
 ### 2. Build Via Dockerfile
 2.1 Create Dockerfile
 ```
-sktaip-cli dockerfile --output ./sktaip.Dockerfile --graph_yaml ./graph.yaml
+adxp-cli agent dockerfile --output ./sktaip.Dockerfile --graph_yaml ./graph.yaml
 ```
 2.2 Docker build
 ```
-docker build -t IMAGE_TAG -f ./sktaip.Dockerfile .
+docker build -t IMAGE_NAME -f ./sktaip.Dockerfile .
 ```
 
 ## How to Request to Server
