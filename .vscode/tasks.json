@@ -1,0 +1,34 @@
+{
+    "version": "2.0.0",
+    "options": {
+        "env":{
+            "PYTHONPATH": "${workspaceFolder}:${env:PYTHONPATH}"
+        }
+    },
+    "tasks": [
+        {
+            "label": "[cli]: 1. Install adxp-cli",
+            "type": "shell",
+            "command": "${command:python.interpreterPath} -m pip install -r requirements.txt",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+
+        },
+        
+        {
+            "label": "[cli]: 2. adxp-cli agent run",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "dir=$(dirname \"${command:python.interpreterPath}\"); \"$dir/adxp-cli\" agent run --host 127.0.0.1 --port 28080 --graph_yaml ./graph.yaml"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

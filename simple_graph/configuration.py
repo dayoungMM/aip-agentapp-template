@@ -9,7 +9,7 @@ from pydantic import BaseModel, AliasChoices, Field, ConfigDict, model_validator
 from langchain_core.runnables import RunnableConfig, ensure_config
 
 from simple_graph import prompts
-from sktaip_api.utils import AIPHeaderKeysExtraIgnore
+from adxp_sdk.serves.utils import AIPHeaderKeysExtraIgnore
 
     
 class BaseConfiguration(BaseModel):

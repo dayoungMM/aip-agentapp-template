@@ -11,9 +11,8 @@ fi
 echo "Activating virtual environment..."
 source .venv/bin/activate
 
-echo "Install sktaip_cli-0.1.2"
+echo "Install adxp_cli-0.1.2"
 pip install sktaip-api
-# pip install /Users/dayoung/dev/aix/aip-sdk/cli/dist/sktaip_cli-0.1.2-py3-none-any.whl
 
 echo "Install requirements.txt"
 pip install -r requirements.txt
@@ -25,6 +24,6 @@ if [ -f .env ]; then
     export $(grep -v '^#' .env | xargs)
 fi
 
-sktaip-cli dev --host 127.0.0.1 --port 28080
+adxp-cli agent run --host 127.0.0.1 --port 28080
 
 
