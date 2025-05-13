@@ -14,7 +14,7 @@ cp .env.example .env
 Please fill in appropriate values
 
 ## Installation
-1. requirements.txt 가 없는 경우
+1. CLI 설치 (0.1.5 이상의 버전을 사용하세요)
 ```
 pip install adxp-cli
 ```
@@ -25,7 +25,7 @@ pip install -r requirements.txt
 
 ## Launch langgraph server locally
 ```
-adxp-cli agent run --host localhost --port 28080 --graph_yaml ./graph.yaml
+adxp-cli agent run --host localhost --port 18080 --graph_yaml ./graph.yaml
 ```
 ## Build 
 
