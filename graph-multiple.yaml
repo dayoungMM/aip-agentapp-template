@@ -1,0 +1,8 @@
+package_directory: .
+graph_path: 
+  - name: first
+    object_path: ./simple_graph/graph.py:graph
+  - name: second
+    object_path: ./simple_graph/graph.py:graph
+env_file: .env
+requirements_file: ./requirements.txt
