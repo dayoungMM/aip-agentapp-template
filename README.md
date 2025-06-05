@@ -100,7 +100,7 @@ The following APIs are created when launched
 
 > graph-stream.yaml (To Use LangGraph Stream Mode)
 
-This feature is supported only in adxp-cli version 0.1.9 or higher. Set `stream_mode`
+This feature is supported only in adxp-cli version 0.1.10 or higher. Set `stream_mode`
 
 If you want to know about LangGraph stream mode, See this page
 -   https://langchain-ai.github.io/langgraph/how-tos/streaming/#supported-stream-modes
