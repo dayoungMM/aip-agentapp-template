@@ -42,6 +42,19 @@
             },
             "problemMatcher": []
         },    
+        {
+            "label": "[cli]: 3. adxp-cli agent dockerfile",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "dir=$(dirname \"${command:python.interpreterPath}\"); \"$dir/adxp-cli\" agent dockerfile --graph_yaml ./graph.yaml"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
     ],
     "inputs": [
         {

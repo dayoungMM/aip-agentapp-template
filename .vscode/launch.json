@@ -38,6 +38,25 @@
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
             "justMyCode": false
+        },
+        {
+            "name": "[🌱]adxp-cli run (custom stream)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "adxp_cli.cli",
+            "args": [
+                "agent",
+                "run",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "18080",
+                "--graph_yaml",
+                "./graph-stream.yaml"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "justMyCode": false
         }
         
     ]

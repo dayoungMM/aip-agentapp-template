@@ -96,6 +96,34 @@ The following APIs are created when launched
 - http://localhost:28080/second/stream
 - http://localhost:28080/second/batch
 
+
+
+> graph-stream.yaml (To Use LangGraph Stream Mode)
+
+This feature is supported only in adxp-cli version 0.1.7 or higher. Set `stream_mode`
+
+If you want to know about LangGraph stream mode, See this page
+-   https://langchain-ai.github.io/langgraph/how-tos/streaming/#supported-stream-modes
+
+
+Supported Stream Mode
+| Mode | Description |
+| --- | --- |
+| values | Streams the full value of the state after each step of the graph. |
+| updates | Streams the updates to the state after each step of the graph. If multiple updates are made in the same step (e.g., multiple nodes are run), those updates are streamed separately. |
+| custom | Streams custom data from inside your graph nodes. |
+| messages | Streams 2-tuples (LLM token, metadata) from any graph nodes where an LLM is invoked. |
+| debug | Streams as much information as possible throughout the execution of the graph. |
+
+```yaml
+package_directory: .
+graph_path: ./custom_stream/graph.py:graph
+env_file: .env
+requirements_file: ./requirements.txt
+stream_mode: custom
+```
+
+
 ## Build 
 
 ### 1. Build Automatically
