@@ -14,7 +14,7 @@ cp .env.example .env
 Please fill in appropriate values
 
 ## Installation
-1. CLI 설치 (0.1.5 이상의 버전을 사용하세요)
+1. CLI 설치 (0.1.10 이상의 버전을 사용하세요)
 ```
 pip install adxp-cli
 ```
