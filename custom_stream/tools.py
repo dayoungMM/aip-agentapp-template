@@ -13,7 +13,7 @@ from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import InjectedToolArg
 from typing_extensions import Annotated
 
-from simple_graph.configuration import Configuration
+from simple_graph.configuration import HeaderMergedConfig
 
 
 async def search(
@@ -25,8 +25,7 @@ async def search(
     to provide comprehensive, accurate, and trusted results. It's particularly useful
     for answering questions about current events.
     """
-    configuration = Configuration.from_runnable_config(config)
-    wrapped = TavilySearchResults(max_results=configuration.max_search_results)
+    wrapped = TavilySearchResults(max_results=3)
     result = await wrapped.ainvoke({"query": query})
     return cast(list[dict[str, Any]], result)
 

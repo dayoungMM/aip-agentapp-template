@@ -12,15 +12,13 @@ from simple_graph import prompts
 from adxp_sdk.serves.utils import AIPHeaderKeysExtraIgnore
 
     
-class BaseConfiguration(BaseModel):
+class BodyConfiguration(BaseModel):
     system_prompt: str = Field(
         default=prompts.SYSTEM_PROMPT,
-        metadata={
-            "description": "The system prompt to use for the agent's interactions. "
-            "This prompt sets the context and behavior for the agent."
-        },
+        description="The system prompt to use for the agent's interactions. "
     )
-class Configuration(BaseConfiguration):
+    llm_provider: str | None = Field(default="oai")
+class HeaderMergedConfig(BodyConfiguration):
     """The configuration for the agent."""
     aip_headers: dict| AIPHeaderKeysExtraIgnore = Field(default={})
     
