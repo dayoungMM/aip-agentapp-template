@@ -2,4 +2,3 @@ package_directory: .
 graph_path: ./simple_graph/graph.py:graph
 env_file: .env
 requirements_file: ./requirements.txt
-stream_mode: custom
