@@ -123,6 +123,29 @@ requirements_file: ./requirements.txt
 stream_mode: custom
 ```
 
+### Only for PAAS custom agent 
+> graph-paas-stream.yaml  
+- package_directory
+  - Specifies the root directory of the Python package to reference when running the paas custom agent
+  - Example: . (current directory)
+- graph_path
+  - Specifies the location of the graph object to actually use
+  - Format: python_file_path:object_path
+  - Example: ./custom_stream/graph_paas.py:runnable
+- env_file
+  - make env file with end point of PAASS
+  - Example: .env
+- requirements_file
+  - Specifies the path to the requirements.txt file containing the list of required Python packages
+  - Example: ./requirements_paas.txt
+
+```yaml
+package_directory: .
+graph_path: ./custom_stream/graph_paas.py:runnable
+env_file: .env
+requirements_file: ./requirements.txt
+stream_mode: custom
+```
 
 ## Build 
 
