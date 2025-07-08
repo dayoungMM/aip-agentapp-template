@@ -1,15 +1,18 @@
-"""Define a custom Reasoning and Action agent.
+"""Define a custom Reasoning and Action agent using RunnableGenerator.
 
 Works with a chat model with tool calling support.
 """
 
 import os
+import json
+import httpx
+import traceback
 from datetime import datetime, timezone
-from typing import Dict, List, Literal, cast
+from typing import Dict, List, Literal, Any, AsyncIterator, Iterator
 from dotenv import load_dotenv
 
 from langchain_core.messages import AIMessage
-from langchain_core.runnables import RunnableConfig
+from langchain_core.runnables import RunnableConfig, RunnableGenerator
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode
 from langchain_openai.chat_models import ChatOpenAI
@@ -21,75 +24,92 @@ from adxp_sdk.serves.utils import AIPHeaderKeysExtraIgnore
 from typing import Callable
 from langgraph.config import get_stream_writer
 
-async def call_model(
-    state: State, config: RunnableConfig
-) -> Dict[str, List[AIMessage]]:
-    """Call the LLM powering our "agent".
-
-    This function prepares the prompt, initializes the model, and processes the response.
+async def stream_model(
+    input: AsyncIterator[Any]
+) -> AsyncIterator[str]:
+    """Stream the LLM response using RunnableGenerator.
 
     Args:
-        state (State): The current state of the conversation.
-        config (RunnableConfig): Configuration for the model run.
+        input (AsyncIterator[Any]): The input stream from RunnableGenerator.
 
-    Returns:
-        dict: A dictionary containing the model's response message.
+    Yields:
+        str: Tokenized response from the model.
     """
+    load_dotenv()
+    url = os.getenv("PAAS_STG_ENDPOINT")
+    if not url:
+        raise ValueError("URL is not set in environment variables")
+
+    headers = {
+        "Content-Type": "application/json",
+        "Client-Name": "adot-biz"
+    }
+
+    # Get the first item from the input stream
+    input_data = None
+    async for item in input:
+        input_data = item
+        break
+
+    if not input_data or not isinstance(input_data, dict):
+        error_msg = "Invalid input: Expected dictionary with messages"
+        yield error_msg
+        return
+
+    # Extract messages from input
+    messages = []
+    input_messages = input_data.get("messages", [])
+    for msg in input_messages:
+        if isinstance(msg, dict):
+            message = {
+                "role": msg.get("role", ""),
+                "content": msg.get("content", "")
+            }
+            messages.append(message)
     
-    configuration = HeaderMergedConfig.model_validate(config.get("configurable", {}))
+    if not messages:
+        error_msg = "No valid messages found in input"
+        yield error_msg
+        return
 
-    # If you want to use the AIP headers, get them from the Runnable Config
-    # AIP headers are used to logging in A.X Platform Gateway. If you don't want to use them, you can remove this part.
-    if isinstance(configuration.aip_headers, dict):
-        aip_headers: AIPHeaderKeysExtraIgnore = AIPHeaderKeysExtraIgnore.model_validate(configuration.aip_headers)
-    elif isinstance(configuration.aip_headers, AIPHeaderKeysExtraIgnore):
-        aip_headers = configuration.aip_headers
-    else:
-        raise ValueError(f"Invalid aip_headers type: {type(configuration.aip_headers)}")
-    if configuration.llm_provider == "oai":
-        llm = ChatOpenAI(
-        api_key=os.getenv("OPENAI_API_KEY"),
-        model="gpt-4o-mini",
-    )
-    else: 
-        headers = aip_headers.get_headers_without_authorization()    
-        api_key = aip_headers.authorization
-        
-        llm = ChatOpenAI(
-            api_key=SecretStr(api_key),
-            base_url=os.getenv("AIP_ENDPOINT"),
-            model=os.getenv("AIP_MODEL"),
-            default_headers=headers,
-        )
+    payload = {
+        "messages": messages,
+        "model_extensions": {
+            "return_citations": True,
+            "support_multi_turn": True,
+            "use_internal_contents": False,
+            "news_filter_off": True
+        }
+    }
+    print(f"[PAYLOAD] {payload}")
+  
+    timeout = int(os.getenv("TIMEOUT", "30"))
+    try:
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            async with client.stream("POST", url, headers=headers, json=payload) as response:
+                async for line in response.aiter_lines():
+                    if not line or line.strip() == "":
+                        continue
+                    print(f"[RAW LINE] {line}")
+                    if not line.startswith("data:"):
+                        error_msg = f"Invalid line format (missing 'data:'): {line}"
+                        yield error_msg
+                        continue
+                    try:
+                        parsed_line = line[len("data:"):].strip()
+                        if parsed_line == "[DONE]":
+                            yield parsed_line
+                            continue
+                        data_obj = json.loads(parsed_line)
+                        yield data_obj
+                    except Exception as e:
+                        error_msg = f"Error processing line: {str(e)}"
+                        yield error_msg
+    except Exception as e:
+        tb = traceback.format_exc()
+        error_msg = f"[ERROR] {str(e) if str(e) else repr(e)}\n{tb}"
+        yield error_msg
 
-    # Format the system prompt. Customize this to change the agent's behavior.
-    system_message = configuration.system_prompt.format(
-        system_time=datetime.now(tz=timezone.utc).isoformat()
-    )
+# Create RunnableGenerator
+runnable = RunnableGenerator(stream_model)
 
-    # Get the model's response
-    writer = get_stream_writer()  
-    result = []
-    for i in llm.stream("hello"):
-        writer({"llm": i.content})
-        result.append(i.content)
-    
-    result = "".join(result)
-    return {"content": result}
-
-
-
-
-
-# Define a new graph
-builder = StateGraph(State, input=InputState, config_schema=BodyConfiguration)
-
-builder.add_node(call_model)
-
-
-builder.add_edge(START, "call_model")
-builder.add_edge("call_model", END)
-
-
-graph = builder.compile()
-graph.name = "Custom Stream Graph" 

@@ -1,5 +1,5 @@
 package_directory: .
-graph_path: ./custom_stream/graph.py:graph
+graph_path: ./custom_stream/graph.py:runnable
 env_file: .env
 requirements_file: ./requirements.txt
 stream_mode: custom
