@@ -36,13 +36,12 @@ async def stream_model(
         str: Tokenized response from the model.
     """
     load_dotenv()
-    url = os.getenv("PAAS_STG_ENDPOINT")
+    url = os.getenv("PAAS_PRD_ENDPOINT")
     if not url:
         raise ValueError("URL is not set in environment variables")
 
     headers = {
-        "Content-Type": "application/json",
-        "Client-Name": "adot-biz"
+        "Content-Type": "application/json"
     }
 
     # Get the first item from the input stream
@@ -67,6 +66,11 @@ async def stream_model(
             }
             messages.append(message)
     
+    # client_name이 있으면 헤더에 반영
+    client_name = input_data.get("client_name")
+    if client_name:
+        headers["Client-Name"] = client_name
+
     if not messages:
         error_msg = "No valid messages found in input"
         yield error_msg
