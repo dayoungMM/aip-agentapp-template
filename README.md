@@ -123,29 +123,7 @@ requirements_file: ./requirements.txt
 stream_mode: custom
 ```
 
-### Only for PAAS custom agent 
-> graph-paas-stream.yaml  
-- package_directory
-  - Specifies the root directory of the Python package to reference when running the paas custom agent
-  - Example: . (current directory)
-- graph_path
-  - Specifies the location of the graph object to actually use
-  - Format: python_file_path:object_path
-  - Example: ./custom_stream/graph_paas.py:runnable
-- env_file
-  - make env file with end point of PAASS
-  - Example: .env
-- requirements_file
-  - Specifies the path to the requirements.txt file containing the list of required Python packages
-  - Example: ./requirements_paas.txt
 
-```yaml
-package_directory: .
-graph_path: ./custom_stream/graph_paas.py:runnable
-env_file: .env
-requirements_file: ./requirements.txt
-stream_mode: custom
-```
 
 ## Build 
 
@@ -403,3 +381,86 @@ assert response
 > Run Graph via Playground. Add user Question at Input Message Form
 
 ![Run UI](./static/playground_run.png)
+
+
+### PAAS custom agent 용 가이드
+- PAAS시스템은 뉴로 환경 내 서비스 앱 내에서만 접근 가능하므로 로컬 서버 테스트 불가.
+- 로직이 구현된 graph_paas.py파일의 권한을 수정하여 이미지 반입 후 vi(vim)모드로 수정해가며 디버깅해야함.
+1. git clone 후 .env파일 생성 및 환경에 맟게 PAAS_PRD_ENDPOINT 또는 PAAS_STG_ENDPOINT 정의
+   ```yaml
+  PAAS_PRD_ENDPOINT=http://61.250.32.73:31000/pe/chat-completions/stream
+  PAAS_STG_ENDPOINT=http://61.250.32.73:32000/pe/chat-completions/stream
+  ```
+3. graph_paas.py 작업
+4. sktaip.Dockerfile 파일 루트 경로에 생성
+   ```yaml
+    ARG PLATFORM_ARCH="linux/amd64"
+    FROM --platform=${PLATFORM_ARCH} python:3.10-bookworm
+    ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
+    ENV PYTHONUNBUFFERED=1
+    RUN apt-get update && \
+        apt-get install -y vim curl yq jq
+    RUN addgroup -gid 1000 usergroup && \
+        adduser user \
+        --disabled-password \
+        -u 1000 --gecos "" \
+        --ingroup 0 \
+        --ingroup usergroup && \
+        mkdir -p /workdir && \
+        chown -R user:usergroup /workdir
+    WORKDIR /workdir
+    USER user
+    ENV HOME=/home/user
+    ENV PATH="${HOME}/.local/bin:${PATH}"
+    ENV WORKER_CLASS="uvicorn.workers.UvicornWorker"
+    ENV APP__HOST=0.0.0.0
+    ENV APP__PORT=18080
+    ENV LOG_LEVEL=info
+    ENV GRACEFUL_TIMEOUT=600
+    ENV TIMEOUT=600
+    ENV KEEP_ALIVE=600
+    # For distinguishing between deployed app and agent-backend
+    ENV IS_DEPLOYED_APP=true
+    ADD . /workdir/.
+    RUN python -m pip install adxp-sdk
+    RUN python -m pip install -r ./requirements_paas.txt
+    RUN echo 'import os' > /workdir/server.py && \
+        echo 'from adxp_sdk.serves.server import get_server' >> /workdir/server.py && \
+        echo '' >> /workdir/server.py && \
+        echo 'app = get_server("./custom_stream/graph_paas.py:runnable", ".env" , "custom")' >> /workdir/server.py
+    ENV APP_MODULE="server:app"
+    EXPOSE 18080
+    SHELL ["/bin/sh", "-c"]
+    CMD python -m uvicorn ${APP_MODULE} \
+        --host ${APP__HOST} \
+        --port ${APP__PORT} \
+        --reload \
+        --log-level ${LOG_LEVEL}
+    ```
+5. 빌드
+예)
+docker build --no-cache -f sktaip.Dockerfile --platform=linux/amd64 -t aip-harbor.sktai.io/sktai/agent/app:custom-agent-paas-v1.7-prd .
+docker push --platform=linux/amd64 aip-harbor.sktai.io/sktai/agent/app:custom-agent-paas-v1.7-prd
+
+> graph-paas-stream.yaml  
+- package_directory
+  - Specifies the root directory of the Python package to reference when running the paas custom agent
+  - Example: . (current directory)
+- graph_path
+  - Specifies the location of the graph object to actually use
+  - Format: python_file_path:object_path
+  - Example: ./custom_stream/graph_paas.py:runnable
+- env_file
+  - make env file with end point of PAASS
+  - Example: .env
+- requirements_file
+  - Specifies the path to the requirements.txt file containing the list of required Python packages
+  - Example: ./requirements_paas.txt
+
+```yaml
+package_directory: .
+graph_path: ./custom_stream/graph_paas.py:runnable
+env_file: .env
+requirements_file: ./requirements.txt
+stream_mode: custom
+```
