@@ -391,7 +391,32 @@ assert response
     PAAS_PRD_ENDPOINT=http://61.250.32.73:31000/pe/chat-completions/stream
     PAAS_STG_ENDPOINT=http://61.250.32.73:32000/pe/chat-completions/stream
    ```
-3. graph_paas.py 작업
+
+2. graph_paas.py 작업
+3. graph-paas-stream.yaml 작업
+> graph-paas-stream.yaml  
+- package_directory
+  - Specifies the root directory of the Python package to reference when running the paas custom agent
+  - Example: . (current directory)
+- graph_path
+  - Specifies the location of the graph object to actually use
+  - Format: python_file_path:object_path
+  - Example: ./custom_stream/graph_paas.py:runnable
+- env_file
+  - make env file with end point of PAASS
+  - Example: .env
+- requirements_file
+  - Specifies the path to the requirements.txt file containing the list of required Python packages
+  - Example: ./requirements_paas.txt
+
+```yaml
+package_directory: .
+graph_path: ./custom_stream/graph_paas.py:runnable
+env_file: .env
+requirements_file: ./requirements_paas.txt
+stream_mode: custom
+```
+
 4. sktaip.Dockerfile 파일 루트 경로에 생성
    ```yaml
     ARG PLATFORM_ARCH="linux/amd64"
@@ -437,30 +462,20 @@ assert response
         --reload \
         --log-level ${LOG_LEVEL}
    ```
-5. 빌드
-예)
-docker build --no-cache -f sktaip.Dockerfile --platform=linux/amd64 -t aip-harbor.sktai.io/sktai/agent/app:custom-agent-paas-v1.7-prd .
-docker push --platform=linux/amd64 aip-harbor.sktai.io/sktai/agent/app:custom-agent-paas-v1.7-prd
 
-> graph-paas-stream.yaml  
-- package_directory
-  - Specifies the root directory of the Python package to reference when running the paas custom agent
-  - Example: . (current directory)
-- graph_path
-  - Specifies the location of the graph object to actually use
-  - Format: python_file_path:object_path
-  - Example: ./custom_stream/graph_paas.py:runnable
-- env_file
-  - make env file with end point of PAASS
-  - Example: .env
-- requirements_file
-  - Specifies the path to the requirements.txt file containing the list of required Python packages
-  - Example: ./requirements_paas.txt
+5. 로컬에서 이미지 빌드 및 푸쉬
+- docker build --no-cache -f sktaip.Dockerfile --platform=linux/amd64 -t aip-harbor.sktai.io/sktai/agent/app:custom-agent-paas-v1.7-prd .
+- docker push --platform=linux/amd64 aip-harbor.sktai.io/sktai/agent/app:custom-agent-paas-v1.7-prd
 
-```yaml
-package_directory: .
-graph_path: ./custom_stream/graph_paas.py:runnable
-env_file: .env
-requirements_file: ./requirements.txt
-stream_mode: custom
-```
+6. 뉴로 환경으로 이미지 반입
+- 분당 개발기 하버-> ACR -> 뉴로 개발/스테이징/운영
+
+7. 반입 이미지 적용
+- 해당 프로젝트 inferenceService의 image 태그 변경(변경 시 자동으로 파드 재시작 됨.)
+
+8. 테스트
+- Agent gateway swagger 접속 후, id, apikey입력 후 stream 요청
+![Vscode_launcher](./static/paas_neuro_gateway_swagger.png)
+
+- 파드 로그 확인
+![Vscode_launcher](./static/paas_neuro_pod_log.png)
