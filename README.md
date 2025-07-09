@@ -385,7 +385,7 @@ assert response
 
 ### PAAS custom agent 용 가이드
 - PAAS시스템은 뉴로 환경 내 서비스 앱 내에서만 접근 가능하므로 로컬 서버 테스트 불가.
-- 로직이 구현된 graph_paas.py파일의 권한을 수정하여 이미지 반입 후 vi(vim)모드로 수정해가며 디버깅해야함.
+- 로직이 구현된 graph_paas.py파일의 권한을 수정(chmod 666 custom_stream/graph_paas.py)하여 이미지 반입 후 vi(vim)모드로 수정해가며 디버깅해야함.
 1. git clone 후 .env파일 생성 및 환경에 맟게 PAAS_PRD_ENDPOINT 또는 PAAS_STG_ENDPOINT 정의
    ```yaml
     PAAS_PRD_ENDPOINT=http://61.250.32.73:31000/pe/chat-completions/stream
