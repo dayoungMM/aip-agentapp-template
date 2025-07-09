@@ -388,9 +388,9 @@ assert response
 - 로직이 구현된 graph_paas.py파일의 권한을 수정하여 이미지 반입 후 vi(vim)모드로 수정해가며 디버깅해야함.
 1. git clone 후 .env파일 생성 및 환경에 맟게 PAAS_PRD_ENDPOINT 또는 PAAS_STG_ENDPOINT 정의
    ```yaml
-  PAAS_PRD_ENDPOINT=http://61.250.32.73:31000/pe/chat-completions/stream
-  PAAS_STG_ENDPOINT=http://61.250.32.73:32000/pe/chat-completions/stream
-  ```
+    PAAS_PRD_ENDPOINT=http://61.250.32.73:31000/pe/chat-completions/stream
+    PAAS_STG_ENDPOINT=http://61.250.32.73:32000/pe/chat-completions/stream
+   ```
 3. graph_paas.py 작업
 4. sktaip.Dockerfile 파일 루트 경로에 생성
    ```yaml
@@ -436,7 +436,7 @@ assert response
         --port ${APP__PORT} \
         --reload \
         --log-level ${LOG_LEVEL}
-    ```
+   ```
 5. 빌드
 예)
 docker build --no-cache -f sktaip.Dockerfile --platform=linux/amd64 -t aip-harbor.sktai.io/sktai/agent/app:custom-agent-paas-v1.7-prd .
