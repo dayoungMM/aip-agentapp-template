@@ -147,3 +147,98 @@ async def call_model(
     llm_provider = config.get("configurable", {}).get("llm_provider")
     
 ```
+
+## 4. Header에서 값을 받아 LangGraph의 Node에서 사용하고 싶은 경우
+> `config["configurable"]["aip_headers"]` 를 파싱해서 사용하세요
+
+> 참고: `custom_stream/graph.py`
+
+```python
+from adxp_sdk.serves.utils import AIPHeaderKeysExtraIgnore
+
+async def call_model(
+    state: State, config: RunnableConfig
+) -> Dict[str, List[AIMessage]]:
+    """Call the LLM powering our "agent".
+
+    This function prepares the prompt, initializes the model, and processes the response.
+
+    Args:
+        state (State): The current state of the conversation.
+        config (RunnableConfig): Configuration for the model run.
+
+    Returns:
+        dict: A dictionary containing the model's response message.
+    """
+    
+    configuration = HeaderMergedConfig.model_validate(config.get("configurable", {}))
+
+    # If you want to use the AIP headers, get them from the Runnable Config
+    # AIP headers are used to logging in A.X Platform Gateway. If you don't want to use them, you can remove this part.
+    if isinstance(configuration.aip_headers, dict):
+        aip_headers: AIPHeaderKeysExtraIgnore = AIPHeaderKeysExtraIgnore.model_validate(configuration.aip_headers)
+    elif isinstance(configuration.aip_headers, AIPHeaderKeysExtraIgnore):
+        aip_headers = configuration.aip_headers
+    else:
+        raise ValueError(f"Invalid aip_headers type: {type(configuration.aip_headers)}")
+
+    headers = aip_headers.get_headers_without_authorization()    
+    api_key = aip_headers.authorization
+    
+    llm = ChatOpenAI(
+        api_key=SecretStr(api_key),
+        base_url=os.getenv("AIP_ENDPOINT"),
+        model=os.getenv("AIP_MODEL"),
+        default_headers=headers,
+    )
+```
+
+## 5. Stream 가능한 Graph 생성하기
+- LanGraph의 stream 기능을 지원합니다.[더 알아보기]( https://langchain-ai.github.io/langgraph/how-tos/streaming/#supported-stream-modes)
+
+| 모드 | 설명 |
+| --- | --- |
+| `values` | 그래프의 각 단계 이후 상태(state)의 전체 값을 스트리밍합니다. |
+| `updates` | 그래프의 각 단계 이후 상태에 대한 업데이트만을 스트리밍합니다. 한 단계에서 여러 업데이트가 발생할 경우(예: 여러 노드 실행), 각각의 업데이트가 별도로 스트리밍됩니다. |
+| `custom` | 그래프 노드 내부에서 정의된 사용자 정의 데이터를 스트리밍합니다. |
+| `messages` | LLM이 호출되는 그래프 노드에서 `(LLM 토큰, 메타데이터)` 형태의 2-튜플을 스트리밍합니다. |
+| `debug` | 그래프 실행 중 가능한 모든 정보를 스트리밍합니다. |
+
+- LangGraph에서 제공하는 Stream Writer를 이용하면 Stream 데이터를 커스텀할 수 있습니다.
+
+```python
+from typing import TypedDict
+from langgraph.config import get_stream_writer
+from langgraph.graph import StateGraph, START
+
+class State(TypedDict):
+    query: str
+    answer: str
+
+def node(state: State):
+    writer = get_stream_writer()  
+    writer({"custom_key": "Generating custom data inside node"}) 
+    return {"answer": "some data"}
+
+graph = (
+    StateGraph(State)
+    .add_node(node)
+    .add_edge(START, "node")
+    .compile()
+)
+
+inputs = {"query": "example"}
+
+# Usage
+for chunk in graph.stream(inputs, stream_mode="custom"):  
+    print(chunk)
+```
+
+- graph.yaml에서 stream_mode를 설정해주세요
+```yaml
+package_directory: .
+graph_path: ./custom_stream/graph.py:graph
+env_file: .env
+requirements_file: ./requirements.txt
+stream_mode: custom
+```
