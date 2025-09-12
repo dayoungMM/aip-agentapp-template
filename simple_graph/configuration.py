@@ -8,7 +8,7 @@ from pydantic import Field, ConfigDict, AliasChoices, BaseModel
 from pydantic import BaseModel, AliasChoices, Field, ConfigDict, model_validator
 
 from simple_graph import prompts
-from adxp_sdk.serves.utils import AIPHeaderKeysExtraIgnore
+from adxp_sdk.serves.utils import AIPHeaders
 
     
 class BodyConfiguration(BaseModel):
@@ -17,6 +17,6 @@ class BodyConfiguration(BaseModel):
     )
 class HeaderMergedConfig(BodyConfiguration):
     """The configuration for the agent."""
-    aip_headers: dict| AIPHeaderKeysExtraIgnore = Field(default={})
+    aip_headers: dict| AIPHeaders = Field(default={})
     
     
