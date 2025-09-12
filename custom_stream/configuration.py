@@ -9,7 +9,12 @@ from pydantic import BaseModel, AliasChoices, Field, ConfigDict, model_validator
 from langchain_core.runnables import RunnableConfig, ensure_config
 
 from simple_graph import prompts
-from adxp_sdk.serves.utils import AIPHeaders
+try:
+    # adxp_sdk >= 0.1.12
+    from adxp_sdk.serves.utils import AIPHeaders
+except ImportError:
+    # adxp_sdk < 0.1.12
+    from adxp_sdk.serves.utils import AIPHeaderKeysExtraIgnore as AIPHeaders
 
     
 class BodyConfiguration(BaseModel):
