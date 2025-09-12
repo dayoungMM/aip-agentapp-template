@@ -123,6 +123,14 @@ requirements_file: ./requirements.txt
 stream_mode: custom
 ```
 
+> graph-rag.yaml (Use Platform Knowledge)
+```yaml
+package_directory: .
+graph_path: ./rag_stream/graph.py:graph
+env_file: .env
+requirements_file: ./requirements.txt
+stream_mode: updates
+```
 
 
 
