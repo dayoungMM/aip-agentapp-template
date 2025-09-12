@@ -17,11 +17,16 @@ from pydantic import SecretStr
 from custom_stream.configuration import HeaderMergedConfig, BodyConfiguration
 from custom_stream.state import InputState, State
 from custom_stream.tools import TOOLS
-from adxp_sdk.serves.utils import AIPHeaderKeysExtraIgnore
 from typing import Callable
 from langgraph.config import get_stream_writer
+try:
+    # adxp_sdk >= 0.1.12
+    from adxp_sdk.serves.utils import AIPHeaders
+except ImportError:
+    # adxp_sdk < 0.1.12
+    from adxp_sdk.serves.utils import AIPHeaderKeysExtraIgnore as AIPHeaders
 
-async def call_model(
+def call_model(
     state: State, config: RunnableConfig
 ) -> Dict[str, List[AIMessage]]:
     """Call the LLM powering our "agent".
@@ -41,8 +46,10 @@ async def call_model(
     # If you want to use the AIP headers, get them from the Runnable Config
     # AIP headers are used to logging in A.X Platform Gateway. If you don't want to use them, you can remove this part.
     if isinstance(configuration.aip_headers, dict):
-        aip_headers: AIPHeaderKeysExtraIgnore = AIPHeaderKeysExtraIgnore.model_validate(configuration.aip_headers)
-    elif isinstance(configuration.aip_headers, AIPHeaderKeysExtraIgnore):
+        aip_headers: AIPHeaders = AIPHeaders.model_validate(configuration.aip_headers)
+    elif isinstance(configuration.aip_headers, AIPHeaders):
+        aip_headers: AIPHeaders = AIPHeaders.model_validate(configuration.aip_headers)
+    elif isinstance(configuration.aip_headers, AIPHeaders):
         aip_headers = configuration.aip_headers
     else:
         raise ValueError(f"Invalid aip_headers type: {type(configuration.aip_headers)}")
@@ -57,15 +64,12 @@ async def call_model(
         
         llm = ChatOpenAI(
             api_key=SecretStr(api_key),
-            base_url=os.getenv("AIP_ENDPOINT"),
+            base_url=os.getenv("AIP_MODEL_ENDPOINT"),
             model=os.getenv("AIP_MODEL"),
             default_headers=headers,
         )
 
-    # Format the system prompt. Customize this to change the agent's behavior.
-    system_message = configuration.system_prompt.format(
-        system_time=datetime.now(tz=timezone.utc).isoformat()
-    )
+    messages = state.messages
 
     # Get the model's response
     writer = get_stream_writer()  

@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Sequence
+from typing import Sequence, List
 
 from langchain_core.messages import AnyMessage
 from langgraph.graph import add_messages
 from langgraph.managed import IsLastStep
 from typing_extensions import Annotated
-
+from adxp_sdk.knowledges.schemas import RetrievalResult
 
 @dataclass
 class InputState:
@@ -45,7 +45,6 @@ class State(InputState):
 
     This class can be used to store any information needed throughout the agent's lifecycle.
     """
-
     is_last_step: IsLastStep = field(default=False)
     """
     Indicates whether the current step is the last one before the graph raises an error.

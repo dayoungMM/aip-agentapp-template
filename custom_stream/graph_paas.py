@@ -20,9 +20,15 @@ from pydantic import SecretStr
 from custom_stream.configuration import HeaderMergedConfig, BodyConfiguration
 from custom_stream.state import InputState, State
 from custom_stream.tools import TOOLS
-from adxp_sdk.serves.utils import AIPHeaderKeysExtraIgnore
 from typing import Callable
 from langgraph.config import get_stream_writer
+try:
+    # adxp_sdk >= 0.1.12
+    from adxp_sdk.serves.utils import AIPHeaders
+except ImportError:
+    # adxp_sdk < 0.1.12
+    from adxp_sdk.serves.utils import AIPHeaderKeysExtraIgnore as AIPHeaders
+
 
 async def stream_model(
     input: AsyncIterator[Any]
