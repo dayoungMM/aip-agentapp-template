@@ -22,7 +22,7 @@ class BodyConfiguration(BaseModel):
         default=prompts.SYSTEM_PROMPT,
         description="The system prompt to use for the agent's interactions. "
     )
-    llm_provider: str | None = Field(default="oai")
+    llm_provider: str= Field(default="oai")
 class HeaderMergedConfig(BodyConfiguration):
     """The configuration for the agent."""
     aip_headers: dict| AIPHeaders = Field(default={})

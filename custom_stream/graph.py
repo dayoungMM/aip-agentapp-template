@@ -45,11 +45,7 @@ def call_model(
 
     # If you want to use the AIP headers, get them from the Runnable Config
     # AIP headers are used to logging in A.X Platform Gateway. If you don't want to use them, you can remove this part.
-    if isinstance(configuration.aip_headers, dict):
-        aip_headers: AIPHeaders = AIPHeaders.model_validate(configuration.aip_headers)
-    elif isinstance(configuration.aip_headers, AIPHeaders):
-        aip_headers: AIPHeaders = AIPHeaders.model_validate(configuration.aip_headers)
-    elif isinstance(configuration.aip_headers, AIPHeaders):
+    if isinstance(configuration.aip_headers, AIPHeaders):
         aip_headers = configuration.aip_headers
     else:
         raise ValueError(f"Invalid aip_headers type: {type(configuration.aip_headers)}")
@@ -59,14 +55,14 @@ def call_model(
         model="gpt-4o-mini",
     )
     else: 
-        headers = aip_headers.get_headers_without_authorization()    
-        api_key = aip_headers.authorization
+        headers = aip_headers.model_dump(include=aip_headers.model_fields.keys(),by_alias=True, exclude_none=True)
+        api_key = headers.pop("authorization")
         
         llm = ChatOpenAI(
-            api_key=SecretStr(api_key),
+            api_key=api_key,
             base_url=os.getenv("AIP_MODEL_ENDPOINT"),
             model=os.getenv("AIP_MODEL"),
-            default_headers=headers,
+            # default_headers=headers,
         )
 
     messages = state.messages

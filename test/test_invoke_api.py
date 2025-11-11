@@ -4,7 +4,7 @@ import pytest
 
 
 def test_invoke_api():
-    url = "http://localhost:28080/invoke"
+    url = "http://localhost:18080/invoke"
     headers = {
         "accept": "application/json",
         "aip-user": "aiplatform3/agenttest",

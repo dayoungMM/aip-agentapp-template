@@ -142,7 +142,8 @@ curl -X 'POST' \
   "input": {
     "messages": [{"content": "올해 수시 특징은?", "type": "human" }]
   },
-  "config": {},
-  "kwarg
+  "config": {}
+}'
+
 
 """

@@ -63,9 +63,9 @@ env_file: .env
 requirements_file: ./requirements.txt
 ```
 The following APIs are created when launched
-- http://localhost:28080/invoke
-- http://localhost:28080/stream
-- http://localhost:28080/batch
+- http://localhost:18080/invoke
+- http://localhost:18080/stream
+- http://localhost:18080/batch
 
 > graph-multiple.yaml (For multiple agents configuration)
 
@@ -89,12 +89,12 @@ env_file: .env
 requirements_file: ./requirements.txt
 ```
 The following APIs are created when launched
-- http://localhost:28080/first/invoke
-- http://localhost:28080/first/stream
-- http://localhost:28080/first/batch
-- http://localhost:28080/second/invoke
-- http://localhost:28080/second/stream
-- http://localhost:28080/second/batch
+- http://localhost:18080/first/invoke
+- http://localhost:18080/first/stream
+- http://localhost:18080/first/batch
+- http://localhost:18080/second/invoke
+- http://localhost:18080/second/stream
+- http://localhost:18080/second/batch
 
 
 
@@ -201,7 +201,7 @@ Note:
 
 ```bash
 curl -X 'POST' \
-  'http://localhost:28080/invoke' \
+  'http://localhost:18080/invoke' \
   -H 'aip-user: <any user name>' \
   -H 'secret-mode: false' \
   -H 'Authorization: <your api key>' \
@@ -261,7 +261,7 @@ Each event contains information about the execution of nodes in the graph.
 request
 ```bash
 curl -X 'POST' \
-  'http://localhost:28080/stream' \
+  'http://localhost:18080/stream' \
   -H 'aip-user: <any user name>' \
   -H 'secret-mode: false' \
   -H 'Authorization: <your api key>' \
@@ -367,7 +367,7 @@ headers = {
 }
 
 agent = RemoteRunnable(
-    "http://localhost:28080",
+    "http://localhost:18080",
     headers=headers,
 )
 response = agent.invoke(
@@ -380,7 +380,7 @@ assert response
 
 3. Playground
 3.1 Login Page
-> http://localhost:28080/login \
+> http://localhost:18080/login \
 `api_key` and `user_name` is required
 
 ![Login UI](./static/playground_login.png)
