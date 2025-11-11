@@ -24,6 +24,6 @@ if [ -f .env ]; then
     export $(grep -v '^#' .env | xargs)
 fi
 
-adxp-cli agent run --host 127.0.0.1 --port 28080
+adxp-cli agent run --host 127.0.0.1 --port 18080
 
 

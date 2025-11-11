@@ -2,3 +2,4 @@ langchain-openai>=0.2.0
 langchain-community>=0.3.0
 langchain>=0.3.0
 langgraph>=0.2.26
+pydantic==2.10.6
